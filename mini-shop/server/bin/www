@@ -4,8 +4,12 @@
 const http = require('http');
 const config = require('../config');
 const App = require('../app');
-
+const mongoose = require('mongoose');
 const log = config.logger;
+
+mongoose.connect(config.mongodb.dsn).then(() =>{
+  log.info("Successfully connected to MongoDB")
+});
 
 /* Logic to start the application */
 const app = App(config);

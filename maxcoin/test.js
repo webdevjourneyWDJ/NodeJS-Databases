@@ -1,5 +1,6 @@
 // request is a module that makes http calls easier
 const request = require('request');
+const redis = require('redis');
 const MongoClient = require('mongodb').MongoClient;
 
 const dsn = "mongodb://localhost:37017";
@@ -26,6 +27,7 @@ function insertMongodb(collection, data){
 MongoClient.connect(dsn, (err, client) => {
     const db = client.db('maxcoin');
     if(err) throw err;
+    console.time('mongodb');
     console.log("*********** Connected to MongoDB ***********");
     fetchFromAPI((err, data) => {
         if (err) throw err;
@@ -38,6 +40,7 @@ MongoClient.connect(dsn, (err, client) => {
 
             collection.findOne({}, options, (err, doc) => {
                 console.log(`The highest vaule is ${doc.value} and it was reached on ${doc.date}`);
+                console.timeEnd('mongodb');
                 client.close();  
             })
         }).catch((err) => {
@@ -46,3 +49,40 @@ MongoClient.connect(dsn, (err, client) => {
         });
     });  
 });
+
+
+function insertRedis (client, data, cb) {
+    const values = ['values'];
+
+    Object.keys(data).forEach((key) => {
+        values.push(data[key]);
+        values.push(key);
+    });
+
+    client.zadd(values, cb);
+}
+
+
+const redisClient = redis.createClient(7379);
+redisClient.on('connect', () => {
+    console.time('redis');
+    console.log('Successfully connected to redis');
+    
+    fetchFromAPI((err, data) => {
+        if(err) throw err;
+
+        insertRedis(redisClient, data.bpi, (err, results) => {
+            if(err) throw err;
+            console.log(`Successfully inserted ${results} key/value pairs into redis`);
+
+            redisClient.zrange('values', -1, -1, 'withscores', (err, result) => {
+                if(err) throw err;
+
+                console.log(`Redis: max value is ${result[1]} and it was reached on ${result[0]}`);
+                console.timeEnd('redis');
+                redisClient.end();
+                
+            })
+        })
+    })
+})

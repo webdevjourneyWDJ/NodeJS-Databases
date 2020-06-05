@@ -1,3 +1,13 @@
 # Databases-For_Node
 
-For MaxCoin just do a simple "npm install" then run "node test.js"
+
+# MaxCoin
+ 
+If you want a GUI for Redis the use the `redis-commander` npm module.
+
+- Remember to `npm i` then run `npm start`
+
+
+# Mini-Shop
+
+- Remember to `npm i` then run `npm start`
