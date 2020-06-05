@@ -1,22 +1,20 @@
 const express = require('express');
+const itemService = require('../../services/itemService');
+const basketService = require('../../services/basketService');
 
 
 module.exports = (config) => {
   const router = express.Router();
   const log = config.logger;
 
+  const basket = basketService(config.redis.client);
+
   router.get('/', async (req, res) => {
-    return res.render('shop', { });
-    /*
     const items = await itemService.getAll();
     return res.render('shop', { items });
-    */
   });
 
   router.get('/tobasket/:itemId', async (req, res, next) => {
-    return next('Not implemented');
-
-    /*
     if (!res.locals.currentUser) {
       req.session.messages.push({
         type: 'warning',
@@ -40,7 +38,6 @@ module.exports = (config) => {
     }
 
     return res.redirect('/shop');
-    */
   });
 
   return router;

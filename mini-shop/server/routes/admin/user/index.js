@@ -95,7 +95,7 @@ module.exports = (config) => {
   });
 
 
-  router.get('/impersonate/:userId', (req, res) => {
+  router.get('/fake/:userId', (req, res) => {
     req.session.userId = req.params.userId;
     req.session.messages.push({
       type: 'success',

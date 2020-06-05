@@ -20,7 +20,7 @@ block content
             each user in users
               tr
                 td
-                  a(href='/admin/user/impersonate/' + user.id)=user.email
+                  a(href='/admin/user/fake/' + user.id)=user.email
                 td
                   a.m-1.btn.btn-primary(href='/admin/user/' + user.id, role='button')
                     | Edit User
