@@ -2,6 +2,7 @@
 const request = require('request');
 const redis = require('redis');
 const MongoClient = require('mongodb').MongoClient;
+const mysql = require('mysql2');
 
 const dsn = "mongodb://localhost:37017";
 
@@ -85,4 +86,48 @@ redisClient.on('connect', () => {
             })
         })
     })
+});
+
+function insertMySQL(connection, data, cb){
+    const values = [];
+    const sql = 'INSERT INTO coinvalues (valuedate, coinvalue) VALUES ?';
+
+    Object.keys(data).forEach((key) => {
+        values.push([key, data[key]]);
+    });
+
+    connection.query(sql, [values], cb);
+}
+
+
+const connection = mysql.connect({
+    host: 'localhost',
+    port: 4306,
+    user: "root",
+    password: "password",
+    database: "maxcoin"
+});
+
+connection.connect((err) => {
+    if(err) throw err;
+    console.time('mysql');
+    console.log("Successfully connected to mysql");
+
+    fetchFromAPI((err, data) => {
+        if(err) throw err;
+
+        insertMySQL(connection, data.bpi, (err, results, fields) => {
+            if(err) throw err;
+
+            console.log(`Successfully inserted ${results.affectedRows} docs into MySQL`);
+            connection.query("SELECT * FROM coinvalues ORDER BY coinvalue DESC LIMIT 0,1", (err, results, fields) =>{
+                if(err) throw err;
+                console.log("results", results);
+                console.log(`MySQL: max value is ${results[0].coinvalue} and it was reached on ${results[0].valuedate}`);
+                console.timeEnd('mysql');
+                connection.end();
+            })
+        })
+        
+    });
 })
