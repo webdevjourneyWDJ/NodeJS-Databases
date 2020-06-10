@@ -12,5 +12,15 @@ module.exports = {
     options: {
       port: 7379
     }
+  },
+  mysql:{
+    options: {
+      host: 'localhost',
+      port: '4306',
+      database: 'miniShop',
+      dialect: 'mysql',
+      username: 'root',
+      password: 'password'
+    }
   }
 };

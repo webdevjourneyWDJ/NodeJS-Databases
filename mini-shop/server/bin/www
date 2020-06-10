@@ -6,7 +6,19 @@ const config = require('../config');
 const App = require('../app');
 const mongoose = require('mongoose');
 const redis = require('redis');
+const Sequelize = require('sequelize');
 const log = config.logger;
+
+const sequelize = new Sequelize(config.mysql.options);
+
+sequelize.authenticate().then(() => {
+  log.info('Successfully connected to MySQL');
+}).catch((err) => {
+  log.fatal(err);
+  process.exit(1);
+});
+
+config.mysql.client = sequelize;
 
 mongoose.connect(config.mongodb.dsn).then(() =>{
   log.info("Successfully connected to MongoDB")
