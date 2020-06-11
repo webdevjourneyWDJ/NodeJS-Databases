@@ -52,10 +52,7 @@ module.exports = (config) => {
     return res.redirect('/basket');
   });
 
-  router.get('/buy', async (req, res, next) => {
-    return next('Not implemented');
-
-    /*
+  router.get('/buy', async (req, res) => {
     try {
       const userId = res.locals.currentUser.id;
       const user = res.locals.currentUser;
@@ -100,7 +97,6 @@ module.exports = (config) => {
       log.fatal(err);
       return res.redirect('/basket');
     }
-    */
   });
 
   return router;
